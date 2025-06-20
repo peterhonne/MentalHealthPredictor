@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Health Prediction Results</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+        h1 {
+            color: #333;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .score-display {
+            text-align: center;
+            margin: 30px 0;
+            padding: 20px;
+            background: linear-gradient(135deg, #4ECDC4 0%, #44A08D 100%);
+            border-radius: 15px;
+            color: white;
+        }
+        .score-number {
+            font-size: 48px;
+            font-weight: bold;
+            margin: 10px 0;
+        }
+        .chart-container img {
+            max-width: 100%;
+            height: auto;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+       .suggestions {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 30px 0;
+        }
+        .suggestions h3 {
+            color: #333;
+            margin-bottom: 15px;
+        }
+        .suggestion-content {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            border-left: 4px solid #667eea;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            line-height: 1.6;
+            color: #444;
+            white-space: pre-wrap;
+        }
+        .suggestion-content p {
+            margin-bottom: 15px;
+        }
+        .suggestion-content p:last-child {
+            margin-bottom: 0;
+        }
+        .back-btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 15px 30px;
+            border: none;
+            border-radius: 25px;
+            font-size: 16px;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-block;
+            margin-top: 20px;
+            transition: all 0.3s ease;
+        }
+        .back-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+            text-decoration: none;
+            color: white;
+        }
+        .user-summary {
+            background: #e3f2fd;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+        }
+        .user-summary h3 {
+            color: #1976d2;
+            margin-bottom: 15px;
+        }
+        .summary-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 10px;
+        }
+        .summary-item {
+            background: white;
+            padding: 10px;
+            border-radius: 5px;
+            border-left: 3px solid #1976d2;
+        }
+        @media (max-width: 600px) {
+            .score-number {
+                font-size: 36px;
+            }
+            .container {
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Your Mental Health Prediction Results</h1>
+
+        <div class="score-display">
+            <h2>Your Health Score</h2>
+            <div class="score-number">{{ health_score }}/100</div>
+            {% if health_score >= 80 %}
+                <p>Excellent! Keep up the great work! 🌟</p>
+            {% elif health_score >= 60 %}
+                <p>Good job! You're on the right track! 👍</p>
+            {% else %}
+                <p>There's room for improvement. You can do it! 💪</p>
+            {% endif %}
+        </div>
+
+        <div class="user-summary">
+            <h3>Your Health Profile Summary</h3>
+            <div class="summary-grid">
+                <div class="summary-item">
+                    <strong>Age:</strong> {{ user_data.Age }}
+                </div>
+                <div class="summary-item">
+                    <strong>Gender:</strong> {{ 'Male' if user_data.Gender == 1 else 'Female' }}
+                </div>
+                <div class="summary-item">
+                    <strong>Sleep Hours:</strong> {{ user_data.Sleep_Hours }} hours/day
+                </div>
+                <div class="summary-item">
+                    <strong>Work Hours:</strong> {{ user_data.Work_Hours }} hours/week
+                </div>
+                <div class="summary-item">
+                    <strong>Physical Activity:</strong> {{ user_data.Physical_Activity_Hours }} hours/week
+                </div>
+                <div class="summary-item">
+                    <strong>Social Media Usage:</strong> {{ user_data.Social_Media_Usage }} hours/day
+                </div>
+                <div class="summary-item">
+                    <strong>Stress Level:</strong>
+                    {% if user_data.Stress_Level == 1 %}Low
+                    {% elif user_data.Stress_Level == 2 %}Medium
+                    {% else %}High
+                    {% endif %}
+                </div>
+                <div class="summary-item">
+                    <strong>Diet Quality:</strong>
+                    {% if user_data.Diet_Quality == 0 %}Healthy
+                    {% elif user_data.Diet_Quality == 1 %}Average
+                    {% else %}Unhealthy
+                    {% endif %}
+                </div>
+                <div class="summary-item">
+                    <strong>Smoking Habit:</strong>
+                    {% if user_data.Smoking_Habit == 0 %}Non-Smoker
+                    {% elif user_data.Smoking_Habit == 1 %}Occasional
+                    {% elif user_data.Smoking_Habit == 2 %}Regular
+                    {% else %}Heavy
+                    {% endif %}
+                </div>
+                <div class="summary-item">
+                    <strong>Alcohol Consumption:</strong>
+                    {% if user_data.Alcohol_Consumption == 0 %}Non-Drinker
+                    {% elif user_data.Alcohol_Consumption == 1 %}Social
+                    {% elif user_data.Alcohol_Consumption == 2 %}Regular
+                    {% else %}Heavy
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <div class="suggestions">
+            <h3>Personalized Recommendations</h3>
+            <div class="suggestion-content">{{ suggestion }}</div>
+        </div>
+        <div style="text-align: center;">
+            <a href="/" class="back-btn">New Prediction</a>
+        </div>
+    </div>
+</body>
+</html>
