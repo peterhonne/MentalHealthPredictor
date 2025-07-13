@@ -1,10 +1,8 @@
-import webbrowser
-import threading
-import time
-from flask import Flask, render_template, request
+from flask import Flask, render_template, request, jsonify
 from joblib import load
 from google import genai
 import pandas as pd
+from datetime import datetime
 from dotenv import load_dotenv
 import os
 
@@ -92,12 +90,21 @@ def generate_suggestion(user_data, health_score):
     return suggestion
 
 
-@app.route('/')
+@app.route('/prediction')
 def index():
     return render_template('index.html')
 
+@app.route('/prediction/health', methods=['GET'])
+def health_check():
+    """Health check endpoint for Kubernetes"""
+    return jsonify({
+        'status': 'healthy',
+        'service': 'mental-health-prediction',
+        'timestamp': datetime.utcnow().isoformat(),
+        'model_loaded': model is not None
+    })
 
-@app.route('/predict', methods=['POST'])
+@app.route('/prediction/predict', methods=['POST'])
 def predict():
     try:
         user_input = {
@@ -128,16 +135,16 @@ def predict():
         return f"Error processing prediction: {str(e)}", 400
 
 
-def open_browser():
-    time.sleep(1.5)
-    webbrowser.open('http://127.0.0.1:5000')
+# def open_browser():
+#     time.sleep(1.5)
+#     webbrowser.open('http://127.0.0.1:5000')
 
 
 if __name__ == '__main__':
     if gemini_api_key:
-        threading.Thread(target=open_browser, daemon=True).start()
+        # threading.Thread(target=open_browser, daemon=True).start()
 
         print("Starting Health Prediction App...")
-        app.run(debug=False, host='127.0.0.1', port=5000)
+        app.run(debug=False, host='0.0.0.0', port=5000)
     else:
         print("Gemini API key not configured, please configure your environment and restart the application.")
